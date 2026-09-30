@@ -14,7 +14,10 @@ const STORE_LINKS = {
 
   /* ---------- Page enter / leave ---------- */
 
-  requestAnimationFrame(() => body.classList.add("is-ready"));
+  window.__namReady = true;
+  const markReady = () => body.classList.add("is-ready");
+  requestAnimationFrame(markReady);
+  setTimeout(markReady, 80);
   window.addEventListener("pageshow", (e) => {
     if (e.persisted) body.classList.remove("is-leaving");
     body.classList.add("is-ready");
@@ -122,21 +125,40 @@ const STORE_LINKS = {
     el.setAttribute("aria-label", words.join(" "));
   });
 
-  /* ---------- Reveal on scroll ---------- */
+  /* ---------- Reveal on scroll ----------
+     Position-based instead of IntersectionObserver thresholds: an element
+     reveals as soon as its top edge enters the viewport, or if it is already
+     above it. Very tall blocks (a whole policy on a phone) and fast jumps
+     (anchor links, scrollbar drags) can't get stuck invisible. */
 
-  const revealTargets = document.querySelectorAll("[data-reveal], .split, .reward, .timeline, [data-count]");
-  const revealIO = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        if (entry.target.hasAttribute("data-count")) countUp(entry.target);
-        revealIO.unobserve(entry.target);
-      });
-    },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+  const scrollChecks = [];
+  let pending = [...document.querySelectorAll("[data-reveal], .split, .reward, .timeline, [data-count]")];
+  scrollChecks.push(() => {
+    if (!pending.length) return;
+    const limit = window.innerHeight * 0.92;
+    pending = pending.filter((el) => {
+      if (el.getBoundingClientRect().top >= limit) return true;
+      el.classList.add("is-in");
+      if (el.hasAttribute("data-count")) countUp(el);
+      return false;
+    });
+  });
+
+  let checkQueued = false;
+  const runChecks = () => {
+    checkQueued = false;
+    scrollChecks.forEach((fn) => fn());
+  };
+  const queueChecks = () => {
+    if (checkQueued) return;
+    checkQueued = true;
+    requestAnimationFrame(runChecks);
+    setTimeout(() => checkQueued && runChecks(), 120); // rAF is paused in background tabs
+  };
+  ["scroll", "resize", "load", "hashchange", "orientationchange"].forEach((evt) =>
+    window.addEventListener(evt, queueChecks, { passive: true })
   );
-  revealTargets.forEach((el) => revealIO.observe(el));
+  document.fonts?.ready.then(queueChecks);
 
   function countUp(el) {
     const end = Number(el.dataset.count);
@@ -267,23 +289,20 @@ const STORE_LINKS = {
       autoTimers.forEach(clearTimeout);
       autoTimers = [];
     };
-    const ringIO = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) return;
-        ringIO.disconnect();
-        habits.forEach((h, i) => {
+    let ringStarted = false;
+    scrollChecks.push(() => {
+      if (ringStarted || ringCard.getBoundingClientRect().top > window.innerHeight * 0.7) return;
+      ringStarted = true;
+      habits.forEach((h, i) => {
           autoTimers.push(
             setTimeout(() => {
               h.setAttribute("aria-pressed", "true");
               render();
             }, reduceMotion ? 0 : 700 + i * 650)
           );
-        });
-      },
-      { threshold: 0.5 }
-    );
+      });
+    });
     render();
-    ringIO.observe(ringCard);
   }
 
   /* ---------- Feature story (sticky phone) ---------- */
@@ -307,16 +326,21 @@ const STORE_LINKS = {
       dots.forEach((s, k) => s.classList.toggle("is-active", k === i));
       if (halo) halo.style.background = `radial-gradient(circle, ${halos[i % halos.length]}, transparent 65%)`;
     };
-    const storyIO = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(steps.indexOf(entry.target));
-        });
-      },
-      { rootMargin: "-45% 0px -45% 0px" }
-    );
-    steps.forEach((s) => storyIO.observe(s));
-    setActive(0);
+    let current = -1;
+    scrollChecks.push(() => {
+      const mid = window.innerHeight / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      steps.forEach((s, k) => {
+        const r = s.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - mid);
+        if (d < bestDist) {
+          bestDist = d;
+          best = k;
+        }
+      });
+      if (best !== current) setActive((current = best));
+    });
   }
 
   /* ---------- Gallery drag + arrows ---------- */
@@ -364,17 +388,14 @@ const STORE_LINKS = {
   const tocLinks = [...document.querySelectorAll(".toc a")];
   if (tocLinks.length) {
     const sections = tocLinks.map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
-    const tocIO = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const id = entry.target.id;
-          tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
-        });
-      },
-      { rootMargin: "-20% 0px -70% 0px" }
-    );
-    sections.forEach((s) => tocIO.observe(s));
+    scrollChecks.push(() => {
+      const line = window.innerHeight * 0.3;
+      let id = sections[0]?.id;
+      sections.forEach((s) => {
+        if (s.getBoundingClientRect().top < line) id = s.id;
+      });
+      tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+    });
   }
 
   /* ---------- FAQ: accordion, categories, search ---------- */
@@ -493,6 +514,9 @@ const STORE_LINKS = {
       }
     })
   );
+
+  runChecks();
+  setTimeout(queueChecks, 400);
 
   /* ---------- Year ---------- */
   document.querySelectorAll("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));

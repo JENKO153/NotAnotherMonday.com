@@ -1629,3 +1629,51 @@ mark { background: #fbe4c0; color: inherit; border-radius: 4px; padding: 0 2px; 
   --bg: rgba(248, 244, 236, 0.12);
   box-shadow: inset 0 0 0 1.5px rgba(248, 244, 236, 0.7);
 }
+
+/* Keep bleed-out decoration (the tilted marquee, hero phones) from widening
+   the page on iOS Safari. `clip` doesn't create a scroll container, so the
+   sticky feature phone keeps working; older browsers fall back to body's
+   overflow-x: hidden. */
+main { overflow-x: clip; }
+
+/* Very small phones (320px): let single-column grids shrink below their
+   content's natural width, and let the email address wrap. */
+.footer a,
+.contact-card,
+.email-template .v,
+.quick span { overflow-wrap: anywhere; }
+@media (max-width: 980px) {
+  .doc-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .checkin,
+  .rewards,
+  .story-grid,
+  .del-grid,
+  .info-grid,
+  .faq-layout,
+  .help-cta { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 820px) {
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 380px) {
+  .plan .badge { position: static; display: inline-block; margin-bottom: 14px; }
+  .brand-name { font-size: 1.08rem; }
+}
+
+/* Nav on narrow phones: the menu button must never be pushed off-screen. */
+.nav-toggle { flex: none; }
+.nav-inner .brand { min-width: 0; }
+.nav-inner .brand-name { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 380px) {
+  .nav-inner { padding: 0 6px 0 10px; gap: 8px; }
+  .nav-inner .brand { gap: 9px; }
+  .nav-inner .brand-mark { width: 36px; height: 36px; border-radius: 11px; }
+  .nav-inner .brand-mark svg { width: 21px; height: 21px; }
+  .nav-inner .brand-name { font-size: 1rem; }
+}
+
+/* Anchor links (#features, #premium, #download…) land below the fixed nav. */
+[id] { scroll-margin-top: 90px; }
