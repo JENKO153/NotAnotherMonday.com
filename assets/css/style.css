@@ -1638,7 +1638,6 @@ main { overflow-x: clip; }
 
 /* Very small phones (320px): let single-column grids shrink below their
    content's natural width, and let the email address wrap. */
-.footer a,
 .contact-card,
 .email-template .v,
 .quick span { overflow-wrap: anywhere; }
@@ -1677,3 +1676,84 @@ main { overflow-x: clip; }
 
 /* Anchor links (#features, #premium, #download…) land below the fixed nav. */
 [id] { scroll-margin-top: 90px; }
+
+/* ==========================================================================
+   Phones & touch screens: smooth scrolling first.
+   Blur filters, backdrop blur and always-running paint animations are the
+   main causes of scroll stutter on mid-range Android phones and iPhones.
+   ========================================================================== */
+
+a, button, summary { -webkit-tap-highlight-color: transparent; }
+
+@media (hover: none), (max-width: 900px) {
+  /* Heavy blurred background blobs → gone (sun, hills and leaves stay) */
+  .blob { display: none; }
+  .seed { display: none; }
+
+  /* Frosted glass → solid surfaces */
+  .nav.is-scrolled .nav-inner,
+  .nav.is-open .nav-inner,
+  .nav-links,
+  .float-card,
+  .hero-pill {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .nav.is-scrolled .nav-inner,
+  .nav.is-open .nav-inner { background: rgba(255, 253, 248, 0.97); }
+  .float-card { background: var(--paper); }
+
+  /* Animations that repaint every frame forever */
+  .plan.premium::before { animation: none; --ang: 200deg; }
+  .story-stage .ring-deco { animation: none; }
+  .sun { animation: none; }
+  .help-cta .reply i { animation: none; }
+
+  /* Gentler, quicker reveals; no sideways slides */
+  .js [data-reveal],
+  .js [data-reveal="left"],
+  .js [data-reveal="right"] {
+    transform: translateY(14px);
+    transition-duration: 0.55s, 0.6s;
+    transition-delay: 0s;
+  }
+  .js [data-reveal="scale"] { transform: scale(0.98); }
+  .js [data-reveal].is-in { transform: none; }
+  /* Word-by-word headline slides look like flicker mid-scroll on phones */
+  .split .w > span { transform: none; transition: none; }
+  .js .split { opacity: 0; transition: opacity 0.5s var(--ease); }
+  .js .split.is-in { opacity: 1; }
+
+  .cta .sun { width: 90px; left: -24px; top: 28px; }
+  .page-hero .sun { width: 84px; right: -22px; top: 96px; }
+  .reward .bar i { transition-duration: 1s; }
+
+  /* Faster page fade-in */
+  .js body { transition-duration: 0.3s; }
+}
+
+/* Touch: hover lifts would otherwise stick on after a tap */
+@media (hover: none) {
+  .btn:hover,
+  .store:hover,
+  .round-btn:hover,
+  .habit:hover,
+  .shot:hover,
+  .quick a:hover,
+  .promise-item:hover,
+  .reward:hover { transform: none; }
+  .btn:hover::after { transform: translateX(-120%); }
+  .quick a:hover .qi { transform: none; background: var(--sage-4); color: var(--sage); }
+  .promise-item:hover { background: var(--cream); }
+  .round-btn:hover { background: var(--paper); color: inherit; }
+  .brand:hover .brand-mark { transform: none; }
+
+  /* Clear press feedback instead */
+  .btn:active, .store:active { transform: scale(0.97); }
+  .quick a:active, .reward:active, .promise-item:active { transform: scale(0.985); }
+  .habit:active { transform: scale(0.98); }
+}
+
+/* Footer email breaks after the "@"; only split mid-word if it truly can't fit */
+@media (max-width: 380px) { .footer a { overflow-wrap: anywhere; } }
+@media (max-width: 880px) { .nav-links { background: var(--paper); } }

@@ -11,6 +11,9 @@ const STORE_LINKS = {
   const doc = document.documentElement;
   const body = document.body;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Touch screens and narrow layouts skip the expensive extras (parallax,
+  // particles, leave-fade) that make scrolling stutter on phones.
+  const lite = window.matchMedia("(hover: none), (max-width: 900px)").matches;
 
   /* ---------- Page enter / leave ---------- */
 
@@ -25,7 +28,7 @@ const STORE_LINKS = {
 
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[href]");
-    if (!a || reduceMotion) return;
+    if (!a || reduceMotion || lite) return;
     if (a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const url = new URL(a.href, location.href);
     if (url.origin !== location.origin) return;
@@ -135,9 +138,11 @@ const STORE_LINKS = {
   let pending = [...document.querySelectorAll("[data-reveal], .split, .reward, .timeline, [data-count]")];
   scrollChecks.push(() => {
     if (!pending.length) return;
-    const limit = window.innerHeight * 0.92;
+    const vh = window.innerHeight;
+    const limit = lite ? vh * 1.25 : vh * 0.92;
     pending = pending.filter((el) => {
-      if (el.getBoundingClientRect().top >= limit) return true;
+      const r = el.getBoundingClientRect();
+      if (r.top >= limit && r.height < vh) return true;
       el.classList.add("is-in");
       if (el.hasAttribute("data-count")) countUp(el);
       return false;
@@ -176,7 +181,7 @@ const STORE_LINKS = {
   /* ---------- Parallax scenery ---------- */
 
   const parallax = [...document.querySelectorAll("[data-parallax]")];
-  if (parallax.length && !reduceMotion) {
+  if (parallax.length && !reduceMotion && !lite) {
     let ticking = false;
     const update = () => {
       const y = window.scrollY;
@@ -202,7 +207,7 @@ const STORE_LINKS = {
   /* ---------- Seeds (floating particles) ---------- */
 
   document.querySelectorAll("[data-seeds]").forEach((host) => {
-    if (reduceMotion) return;
+    if (reduceMotion || lite) return;
     const n = Number(host.dataset.seeds) || 10;
     for (let i = 0; i < n; i++) {
       const s = document.createElement("i");
@@ -326,8 +331,10 @@ const STORE_LINKS = {
       dots.forEach((s, k) => s.classList.toggle("is-active", k === i));
       if (halo) halo.style.background = `radial-gradient(circle, ${halos[i % halos.length]}, transparent 65%)`;
     };
+    const stageEl = story.querySelector(".story-stage");
     let current = -1;
     scrollChecks.push(() => {
+      if (!stageEl || stageEl.offsetParent === null) return; // phone layout: no sticky phone to drive
       const mid = window.innerHeight / 2;
       let best = 0;
       let bestDist = Infinity;
@@ -500,6 +507,25 @@ const STORE_LINKS = {
     };
     openFromHash();
     window.addEventListener("hashchange", openFromHash);
+    // The browser jumps to #q-… before fonts load and the layout settles, so
+    // re-align to the opened question once everything has its final height.
+    // Android Chrome also runs its own fragment scroll around load, which
+    // cancels a smooth scroll, so jump instantly and repeat briefly — but
+    // stop the moment the visitor starts scrolling themselves.
+    const hashTarget = location.hash && document.getElementById(location.hash.slice(1));
+    if (hashTarget && hashTarget.classList.contains("qa")) {
+      let userMoved = false;
+      ["touchstart", "wheel", "keydown"].forEach((evt) =>
+        window.addEventListener(evt, () => (userMoved = true), { once: true, passive: true })
+      );
+      const realign = () => {
+        if (!userMoved) hashTarget.scrollIntoView({ block: "start", behavior: "instant" });
+      };
+      const settle = () => [60, 400, 1000].forEach((ms) => setTimeout(realign, ms));
+      if (document.readyState === "complete") settle();
+      else window.addEventListener("load", settle, { once: true });
+      document.fonts?.ready.then(realign);
+    }
   }
 
   /* ---------- Copy email ---------- */
