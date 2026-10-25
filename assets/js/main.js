@@ -1,10 +1,10 @@
 /* Not Another Monday — site interactions */
 
-// Paste the live store links here once the listings are approved.
-// While a link is empty, its button shows a "launching soon" message instead.
+// Live store listings. While a link is empty, its badge reads "Coming soon"
+// and tapping it shows a message instead of going nowhere.
 const STORE_LINKS = {
-  ios: "",
-  android: "",
+  ios: "https://apps.apple.com/app/id6809999070",
+  android: "", // paste the Google Play listing URL here once it's approved
 };
 
 (() => {
@@ -93,20 +93,33 @@ const STORE_LINKS = {
 
   /* ---------- Store buttons ---------- */
 
+  const isAndroid = /android/i.test(navigator.userAgent);
+
   document.querySelectorAll("[data-store]").forEach((btn) => {
-    const key = btn.dataset.store;
+    // "auto" buttons (Start free / Start 7-day free trial) follow the visitor's phone
+    let key = btn.dataset.store;
+    if (key === "auto") key = isAndroid ? "android" : "ios";
     const href = STORE_LINKS[key];
     if (href) {
       btn.setAttribute("href", href);
       btn.setAttribute("target", "_blank");
       btn.setAttribute("rel", "noopener");
-    } else {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        toast(key === "ios" ? "Launching soon on the App Store 🌱" : "Launching soon on Google Play 🌱");
-      });
+      return;
     }
+    if (btn.classList.contains("store")) {
+      btn.classList.add("is-soon");
+      const small = btn.querySelector("small");
+      if (small) small.textContent = "Coming soon to";
+      btn.setAttribute("aria-label", key === "ios" ? "Coming soon to the App Store" : "Coming soon to Google Play");
+    }
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      toast(key === "ios" ? "Coming soon to the App Store 🌱" : "Coming soon to Google Play. We’re almost there 🌱");
+    });
   });
+
+  // Android visitors see the Google Play badge first
+  if (isAndroid) document.querySelectorAll(".stores").forEach((el) => el.classList.add("android-first"));
 
   /* ---------- Split headlines ---------- */
 
@@ -404,6 +417,21 @@ const STORE_LINKS = {
       tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
     });
   }
+
+  /* ---------- Homepage mini-FAQ ---------- */
+
+  document.querySelectorAll(".mini-faq .qa").forEach((qa, i) => {
+    const btn = qa.querySelector("button");
+    const ans = qa.querySelector(".ans");
+    ans.id = `mqa-${i}`;
+    btn.setAttribute("aria-controls", ans.id);
+    btn.setAttribute("aria-expanded", "false");
+    btn.addEventListener("click", () => {
+      const open = !qa.classList.contains("is-open");
+      qa.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+    });
+  });
 
   /* ---------- FAQ: accordion, categories, search ---------- */
 
