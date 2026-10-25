@@ -95,6 +95,26 @@ const STORE_LINKS = {
 
   const isAndroid = /android/i.test(navigator.userAgent);
 
+  // Android waitlist (until Google Play is live): badges and links jump to the form
+  const waitlist = document.querySelector("[data-waitlist]");
+  if (waitlist && STORE_LINKS.android) {
+    waitlist.remove();
+    document.querySelectorAll("[data-waitlist-link]").forEach((el) => el.remove());
+  }
+  const openWaitlist = () => {
+    const wl = document.querySelector("[data-waitlist]");
+    if (!wl) return false;
+    wl.classList.add("is-in");
+    wl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    setTimeout(() => wl.querySelector('input[type="email"]')?.focus({ preventScroll: true }), reduceMotion ? 0 : 600);
+    return true;
+  };
+  document.querySelectorAll("[data-waitlist-link]").forEach((a) =>
+    a.addEventListener("click", (e) => {
+      if (openWaitlist()) e.preventDefault();
+    })
+  );
+
   document.querySelectorAll("[data-store]").forEach((btn) => {
     // "auto" buttons (Start free / Start 7-day free trial) follow the visitor's phone
     let key = btn.dataset.store;
@@ -114,6 +134,7 @@ const STORE_LINKS = {
     }
     btn.addEventListener("click", (e) => {
       e.preventDefault();
+      if (key === "android" && openWaitlist()) return;
       toast(key === "ios" ? "Coming soon to the App Store 🌱" : "Coming soon to Google Play. We’re almost there 🌱");
     });
   });
@@ -415,6 +436,53 @@ const STORE_LINKS = {
         if (s.getBoundingClientRect().top < line) id = s.id;
       });
       tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+    });
+  }
+
+  /* ---------- Android waitlist → MailerLite ---------- */
+
+  const wlForm = document.querySelector(".waitlist-form");
+  if (wlForm) {
+    const wlMsg = document.querySelector(".wl-msg");
+    const wlBtn = wlForm.querySelector(".wl-btn");
+    const wlEmail = wlForm.querySelector('input[type="email"]');
+    const show = (text, type) => {
+      wlMsg.textContent = text;
+      wlMsg.className = "wl-msg" + (type ? " is-" + type : "");
+    };
+    wlForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (wlForm.nam_wl_website && wlForm.nam_wl_website.value) return; // bot
+      const value = (wlEmail.value || "").trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        show("Please enter a valid email address.", "error");
+        wlEmail.focus();
+        return;
+      }
+      wlBtn.disabled = true;
+      show("Adding you…");
+      const data = new FormData(wlForm);
+      data.delete("nam_wl_website");
+      // MailerLite's public form endpoint allows cross-origin requests, so the
+      // reply can be read directly. No retry on failure: a retry could send
+      // the double-opt-in confirmation email twice.
+      fetch(wlForm.action, { method: "POST", body: data })
+        .then((r) => r.json().catch(() => ({})))
+        .then((res) => {
+          if (res && res.success === false) {
+            const err = res.errors?.fields?.email?.[0] || "Something went wrong. Please try again.";
+            show(err, "error");
+            wlBtn.disabled = false;
+            return;
+          }
+          wlForm.reset();
+          wlForm.hidden = true;
+          show("You’re on the list! Check your inbox and tap the confirm link so we can tell you when it lands on Google Play.", "success");
+        })
+        .catch(() => {
+          show("Couldn’t connect. Please check your connection and try again.", "error");
+          wlBtn.disabled = false;
+        });
     });
   }
 

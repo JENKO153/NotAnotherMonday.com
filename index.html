@@ -29,9 +29,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=2026102505">
+  <link rel="stylesheet" href="assets/css/style.css?v=2026102507">
   <script>document.documentElement.classList.add("js");setTimeout(function(){if(!window.__namReady){document.documentElement.classList.remove("js");}},2500);</script>
-  <script src="assets/js/main.js?v=2026102505" defer></script>
+  <script src="assets/js/main.js?v=2026102507" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -182,6 +182,7 @@
           <span><small>Get it on</small><strong>Google Play</strong></span>
         </a>
       </div>
+      <a class="waitlist-link" href="#android-waitlist" data-waitlist-link data-reveal style="--d:720ms"><svg aria-hidden="true"><use href="#i-play"/></svg>On Android? Join the waitlist <svg aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
       <div class="hero-meta" data-reveal style="--d:800ms">
         <span class="chip soft"><svg><use href="#i-check"/></svg> Free to start</span>
         <span class="chip soft"><svg><use href="#i-sparkles"/></svg> 7-day Premium trial</span>
@@ -628,6 +629,32 @@
       </a>
     </div>
     <span class="tagline" data-reveal style="--d:250ms">A happier, brighter Monday starts here.</span>
+
+    <!-- Android waitlist → MailerLite form "NAM – Android waitlist (website)"
+         (account 2125905, form 202269857095354365, group "NAM Android launch list", double opt-in) -->
+    <div class="waitlist" id="android-waitlist" data-waitlist data-reveal>
+      <div class="waitlist-head">
+        <span class="waitlist-icon"><svg aria-hidden="true"><use href="#i-play"/></svg></span>
+        <div>
+          <h3 id="wl-title">Coming to Android</h3>
+          <p>Already on the App Store. Join the waitlist and we’ll email you the moment it lands on Google Play.</p>
+        </div>
+      </div>
+      <form class="waitlist-form" novalidate aria-labelledby="wl-title"
+            action="https://assets.mailerlite.com/jsonp/2125905/forms/202269857095354365/subscribe" method="post">
+        <label class="sr-only" for="wl-name">First name (optional)</label>
+        <input class="wl-input" id="wl-name" type="text" name="fields[name]" placeholder="First name" autocomplete="given-name">
+        <label class="sr-only" for="wl-email">Email address</label>
+        <input class="wl-input" id="wl-email" type="email" name="fields[email]" placeholder="Your email" autocomplete="email" required>
+        <!-- honeypot: bots fill this, people never see it -->
+        <div class="wl-hp" aria-hidden="true"><input type="text" name="nam_wl_website" tabindex="-1" autocomplete="off"></div>
+        <input type="hidden" name="ml-submit" value="1">
+        <input type="hidden" name="anticsrf" value="true">
+        <button class="btn wl-btn" type="submit">Join the waitlist</button>
+      </form>
+      <p class="wl-msg" role="status" aria-live="polite"></p>
+      <p class="wl-fine">One email when it launches. No spam, unsubscribe any time. Sent with MailerLite, see our <a href="privacy/#waitlist">Privacy Policy</a>.</p>
+    </div>
   </div>
 </section>
 
