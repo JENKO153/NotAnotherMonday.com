@@ -2004,3 +2004,19 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .waitlist-form { grid-template-columns: minmax(0, 1fr); }
   .wl-btn { width: 100%; }
 }
+
+/* Feature walkthrough: keep the sticky phone clear of the fixed nav on short
+   laptop screens. The stage starts below the nav, and the phone is sized by
+   the window's height as well as its width (phone height ≈ width × 2.16). */
+.story-stage {
+  top: 96px;
+  height: calc(100vh - 96px);
+  height: calc(100svh - 96px);
+}
+.story-stage .phone {
+  --w: clamp(200px, min(25vw, calc((100vh - 150px) * 0.46)), 320px);
+}
+/* Founder photo: also fit short laptop screens while it's sticky (4:5 photo) */
+@media (min-width: 901px) {
+  .founder-photo { max-width: min(440px, calc((100vh - 190px) * 0.78)); }
+}
