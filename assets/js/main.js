@@ -29,10 +29,13 @@ const STORE_LINKS = {
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a[href]");
     if (!a || reduceMotion || lite) return;
+    // A button handler already took over (e.g. the "Coming soon" Google Play
+    // badge), or the link only points within this page: no fade-out.
+    if (e.defaultPrevented || a.getAttribute("href").startsWith("#")) return;
     if (a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const url = new URL(a.href, location.href);
     if (url.origin !== location.origin) return;
-    if (url.pathname === location.pathname && url.hash) return;
+    if (url.pathname === location.pathname && url.search === location.search) return;
     if (a.hasAttribute("download") || a.protocol === "mailto:") return;
     e.preventDefault();
     body.classList.add("is-leaving");
