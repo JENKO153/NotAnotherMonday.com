@@ -2046,3 +2046,26 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 .footer ul a { display: inline-block; padding: 4px 0; min-height: 24px; }
 .footer ul { gap: 4px; }
 .doc a, .qa .ans-in a, .wl-fine a, .waitlist-link { padding-block: 3px; }
+
+/* Plan prices */
+.plan .price { line-height: 1.55; }
+.plan .price .amount {
+  display: inline-block;
+  margin-right: 4px;
+  font-family: var(--serif);
+  font-size: 2.3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1;
+  color: var(--forest);
+  vertical-align: -4px;
+}
+.plan.premium .price .amount { color: var(--cream); }
+.plan.premium .price strong { color: var(--cream); font-weight: 600; }
+.plan .price .save {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(247, 220, 179, 0.18);
+  color: var(--sun);
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  vertical-align: 2px;
+}
