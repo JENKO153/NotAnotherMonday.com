@@ -2069,3 +2069,18 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   font-size: 0.78rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
   vertical-align: 2px;
 }
+
+/* Footer social links */
+.social { display: flex; gap: 10px; margin-top: 18px; }
+.social a {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--forest);
+  transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.4s var(--ease);
+}
+.social a:hover { background: var(--forest); color: var(--cream); border-color: var(--forest); transform: translateY(-2px); }
+.social svg { width: 20px; height: 20px; }
+@media (hover: none) { .social a:hover { transform: none; background: var(--paper); color: var(--forest); border-color: var(--line); } }
