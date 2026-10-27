@@ -142,8 +142,10 @@ const STORE_LINKS = {
     });
   });
 
-  // Android visitors see the Google Play badge first
-  if (isAndroid) document.querySelectorAll(".stores").forEach((el) => el.classList.add("android-first"));
+  // Android visitors (until Google Play is live) get one "Join the Android
+  // waitlist" button first, instead of a badge that can't take them anywhere
+  if (isAndroid && !STORE_LINKS.android) doc.classList.add("is-android-waitlist");
+  else if (isAndroid) document.querySelectorAll(".stores").forEach((el) => el.classList.add("android-first"));
 
   /* ---------- Split headlines ---------- */
 

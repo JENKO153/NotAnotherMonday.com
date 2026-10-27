@@ -2020,3 +2020,29 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
 @media (min-width: 901px) {
   .founder-photo { max-width: min(440px, calc((100vh - 190px) * 0.78)); }
 }
+
+/* Review fixes (27 Oct 2026) */
+
+/* Android visitors before Google Play launch: one clear waitlist button */
+.store-waitlist { display: none; }
+.is-android-waitlist .store-waitlist { display: inline-flex; order: -1; background: var(--sage-ink); }
+.is-android-waitlist .cta .store-waitlist { background: var(--sun); color: var(--forest); }
+.is-android-waitlist .store[data-store="android"],
+.is-android-waitlist .hero-copy .waitlist-link { display: none; }
+
+/* Widget card: clearly not available yet */
+.tile-badge.soon { background: var(--cream-2); color: var(--ink-soft); border: 1px solid var(--line-strong); }
+.tile-soon .ti { background: var(--cream-2); color: var(--ink-mute); }
+
+/* Founder caption */
+.founder-caption {
+  margin-top: 26px;
+  text-align: center;
+  font-size: 0.86rem; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+/* Tap targets: footer and inline links at least 24px tall (WCAG 2.2 AA) */
+.footer ul a { display: inline-block; padding: 4px 0; min-height: 24px; }
+.footer ul { gap: 4px; }
+.doc a, .qa .ans-in a, .wl-fine a, .waitlist-link { padding-block: 3px; }
