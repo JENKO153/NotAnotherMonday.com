@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>A recipe shared with you — Not Another Monday</title>
+  <meta name="description" content="Someone shared a recipe with you from Not Another Monday. Open it in the app, or get the app free.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#f8f4ec">
+  <meta name="apple-itunes-app" content="app-id=6809999070">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <link rel="icon" href="../assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#f8f4ec; --card:#fffbf6; --ink:#20332c; --muted:#6b6a64; --line:#e4dccf; --sage:#6f8f63; --moss:#556a4f; --terra:#b8574a; --terra-soft:#f3ddd6; }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.55; padding:0 16px calc(32px + env(safe-area-inset-bottom)); }
+    .wrap { max-width: 640px; margin: 0 auto; }
+    header { padding: 20px 0 12px; }
+    .brand { display:inline-flex; align-items:center; gap:10px; color:var(--ink); text-decoration:none; font-weight:700; }
+    .brand svg { width:28px; height:28px; color:var(--sage); }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:24px; padding:24px 22px; box-shadow:0 6px 18px rgba(0,0,0,.05); }
+    .eyebrow { margin:0 0 6px; color:var(--terra); font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:0 0 6px; font-family:"Source Serif 4",Georgia,serif; font-size:1.9rem; line-height:1.15; overflow-wrap:anywhere; }
+    h2 { margin:22px 0 8px; font-size:1.05rem; }
+    .facts { margin:0; color:var(--terra); font-weight:600; }
+    ul { margin:0; padding-left:1.2rem; }
+    li { margin:3px 0; overflow-wrap:anywhere; }
+    .method { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .actions { display:flex; flex-direction:column; gap:10px; margin-top:26px; }
+    .btn { display:block; text-align:center; text-decoration:none; font-weight:700; border-radius:999px; padding:14px 20px; border:1.5px solid var(--sage); }
+    .btn-primary { background:var(--sage); color:#fff; }
+    .btn-secondary { background:transparent; color:var(--moss); }
+    .hint { margin:16px 0 0; color:var(--muted); font-size:.9rem; }
+    .problem h1 { font-size:1.5rem; }
+    footer { margin-top:28px; text-align:center; color:var(--muted); font-size:.85rem; }
+    footer a { color:var(--muted); }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="../">
+      <svg viewBox="20 18 60 56" fill="currentColor" aria-hidden="true">
+        <path d="M50 22.9C56 30 58.2 36 58.2 42C58.2 49 54.5 54.5 50 59.2C45.5 54.5 41.8 49 41.8 42C41.8 36 44 30 50 22.9Z"/>
+        <path d="M23.6 47.4C37 47.6 46.5 56.5 48.8 70C35 71.4 25 62.5 23.6 47.4Z"/>
+        <path d="M76.4 47.4C63 47.6 53.5 56.5 51.2 70C65 71.4 75 62.5 76.4 47.4Z"/>
+      </svg>
+      Not Another Monday
+    </a>
+  </header>
+
+  <main>
+    <article class="card" id="recipe" hidden>
+      <p class="eyebrow">Recipe shared with you</p>
+      <h1 id="r-title"></h1>
+      <p class="facts" id="r-facts" hidden></p>
+      <section id="r-ingredients" hidden>
+        <h2>Ingredients</h2>
+        <ul id="r-ingredients-list"></ul>
+      </section>
+      <section id="r-method" hidden>
+        <h2>Method</h2>
+        <p class="method" id="r-method-text"></p>
+      </section>
+      <div class="actions">
+        <a class="btn btn-primary" id="open-app" href="#">Open in Not Another Monday</a>
+        <a class="btn btn-secondary" id="get-app" href="../#download">Get the app</a>
+      </div>
+      <p class="hint" id="r-hint">Already have the app? Tap “Open”. New here? “Get the app” takes you to the store, and this recipe will be waiting when you open it.</p>
+    </article>
+
+    <article class="card problem" id="problem" hidden>
+      <p class="eyebrow">Recipe link</p>
+      <h1>This recipe link isn’t working</h1>
+      <p>The link may have been cut short when it was copied or sent. Ask the person who shared it to send it again.</p>
+      <div class="actions">
+        <a class="btn btn-secondary" href="../">Visit Not Another Monday</a>
+      </div>
+    </article>
+
+    <noscript>
+      <article class="card">
+        <h1>Turn on JavaScript to see this recipe</h1>
+        <p>The recipe is inside the link and is shown by this page. You can also open the link on a phone that has Not Another Monday installed.</p>
+      </article>
+    </noscript>
+  </main>
+
+  <footer>
+    <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · <a href="../support/">Support</a>
+    <p>© <span id="year">2026</span> Chooky Chasing Life</p>
+  </footer>
+</div>
+<script src="../assets/js/recipe.js?v=2026110401"></script>
+</body>
+</html>
