@@ -9,7 +9,7 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#f8f4ec">
   <meta name="apple-itunes-app" content="app-id=6809999070">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ihksdtvroojveawpqpav.supabase.co; base-uri 'none'; form-action 'none'; connect-src https://ihksdtvroojveawpqpav.supabase.co">
   <link rel="icon" href="../assets/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
@@ -29,6 +29,7 @@
     .eyebrow { margin:0 0 6px; color:var(--terra); font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
     h1 { margin:0 0 6px; font-family:"Source Serif 4",Georgia,serif; font-size:1.9rem; line-height:1.15; overflow-wrap:anywhere; }
     h2 { margin:22px 0 8px; font-size:1.05rem; }
+    .photo { display:block; width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; border-radius:18px; margin:4px 0 16px; background:var(--terra-soft); }
     .facts { margin:0; color:var(--terra); font-weight:600; }
     ul { margin:0; padding-left:1.2rem; }
     li { margin:3px 0; overflow-wrap:anywhere; }
@@ -58,8 +59,14 @@
   </header>
 
   <main>
+    <article class="card" id="loading">
+      <p class="eyebrow">Recipe shared with you</p>
+      <h1>Opening your recipe…</h1>
+    </article>
+
     <article class="card" id="recipe" hidden>
       <p class="eyebrow">Recipe shared with you</p>
+      <img class="photo" id="r-photo" alt="" width="1200" height="750" hidden>
       <h1 id="r-title"></h1>
       <p class="facts" id="r-facts" hidden></p>
       <section id="r-ingredients" hidden>
