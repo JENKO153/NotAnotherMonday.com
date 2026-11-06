@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /recipe/
 
 Sitemap: https://notanothermonday.com/sitemap.xml
