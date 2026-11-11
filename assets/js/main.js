@@ -645,6 +645,125 @@ const STORE_LINKS = {
   runChecks();
   setTimeout(queueChecks, 400);
 
+  /* ---------- Live fasting timer (hero card + Lock Screen) ----------
+     A pretend 16-hour fast that started 14½ hours ago, ticking each second. */
+
+  const clocks = [...document.querySelectorAll("[data-fast-clock]")];
+  const rings = [...document.querySelectorAll("[data-fast-ring]")];
+  if (clocks.length || rings.length) {
+    const goal = 16 * 3600;
+    const started = Date.now() - (14 * 3600 + 32 * 60 + 8) * 1000;
+    const pad = (n) => String(n).padStart(2, "0");
+    const tickFast = () => {
+      const secs = Math.floor((Date.now() - started) / 1000) % goal;
+      const text = `${pad(Math.floor(secs / 3600))}:${pad(Math.floor((secs % 3600) / 60))}:${pad(secs % 60)}`;
+      clocks.forEach((el) => (el.textContent = text));
+      const left = String(100 - (secs / goal) * 100);
+      rings.forEach((r) => r.style.setProperty("stroke-dashoffset", left));
+    };
+    // Let the rings sweep in from empty once the page has painted.
+    setTimeout(tickFast, reduceMotion ? 0 : 500);
+    setInterval(() => !document.hidden && tickFast(), 1000);
+  }
+
+  /* ---------- Lock Screen style switch ---------- */
+
+  const lock = document.querySelector("[data-lock]");
+  if (lock) {
+    const dateEl = lock.querySelector("[data-lock-date]");
+    if (dateEl) {
+      try {
+        dateEl.textContent = new Date().toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long" }).replace(",", "");
+      } catch (e) { /* keep the written date */ }
+    }
+    const buttons = [...lock.querySelectorAll("[data-lock-style]")];
+    let userPicked = false;
+    const pick = (style) => {
+      lock.dataset.style = style;
+      buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lockStyle === style)));
+    };
+    buttons.forEach((b) => b.addEventListener("click", () => { userPicked = true; pick(b.dataset.lockStyle); }));
+    // Show off the three styles once while the section is in view, until someone picks one.
+    if (!reduceMotion) {
+      const order = ["moss", "light", "dark"];
+      let i = 0;
+      const timer = setInterval(() => {
+        if (userPicked) return clearInterval(timer);
+        const r = lock.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight || document.hidden) return;
+        i = (i + 1) % order.length;
+        pick(order[i]);
+      }, 3200);
+    }
+  }
+
+  /* ---------- Training toolkit tabs ---------- */
+
+  const toolkit = document.querySelector("[data-toolkit]");
+  if (toolkit) {
+    const tabs = [...toolkit.querySelectorAll(".tk-tab")];
+    const panels = [...toolkit.querySelectorAll(".tk-panel")];
+    const fronts = [...toolkit.querySelectorAll(".tk-front img")];
+    const backs = [...toolkit.querySelectorAll(".tk-back img")];
+    const cycleMs = 6500;
+    toolkit.style.setProperty("--tk-time", `${cycleMs}ms`);
+    let current = 0;
+    let auto = !reduceMotion;
+    let timer = null;
+    const show = (i, focus) => {
+      current = i;
+      tabs.forEach((t, k) => {
+        t.setAttribute("aria-selected", String(k === i));
+        t.tabIndex = k === i ? 0 : -1;
+        // restart the progress bar
+        const bar = t.querySelector(".tk-bar");
+        if (bar) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
+      });
+      panels.forEach((p, k) => {
+        p.hidden = k !== i;
+        p.classList.toggle("is-active", k === i);
+      });
+      fronts.forEach((im, k) => im.classList.toggle("is-active", k === i));
+      backs.forEach((im, k) => im.classList.toggle("is-active", k === i));
+      toolkit.querySelectorAll("[data-tk-chip]").forEach((c) => c.classList.toggle("is-active", Number(c.dataset.tkChip) === i));
+      if (focus) tabs[i].focus();
+    };
+    const stopAuto = () => {
+      auto = false;
+      toolkit.classList.remove("is-cycling");
+      clearInterval(timer);
+    };
+    tabs.forEach((t, k) => {
+      t.addEventListener("click", () => { stopAuto(); show(k); });
+      t.addEventListener("keydown", (e) => {
+        const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        stopAuto();
+        show((current + dir + tabs.length) % tabs.length, true);
+      });
+    });
+    if (auto) {
+      // Only cycle while the section is on screen; start the bar when it first appears.
+      let started = false;
+      scrollChecks.push(() => {
+        if (started || !auto) return;
+        const r = toolkit.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.6 && r.bottom > 0) {
+          started = true;
+          show(0);
+          toolkit.classList.add("is-cycling");
+          timer = setInterval(() => {
+            const r2 = toolkit.getBoundingClientRect();
+            if (!auto || document.hidden) return;
+            if (r2.bottom < 0 || r2.top > window.innerHeight) return;
+            show((current + 1) % tabs.length);
+          }, cycleMs);
+        }
+      });
+    }
+  }
+
   /* ---------- Year ---------- */
   document.querySelectorAll("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));
 })();
