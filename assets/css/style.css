@@ -1161,12 +1161,19 @@ em.serif { font-family: var(--serif); font-style: italic; font-weight: 500; }
 .footer-social span { white-space: nowrap; }
 @media (max-width: 360px) { .footer-social span { white-space: normal; overflow-wrap: anywhere; } }
 .footer-wordmark {
-  display: flex; align-items: flex-end; justify-content: center; gap: 0.06em;
-  margin: clamp(28px, 4vw, 48px) 0 0; padding-bottom: 0.2em; color: var(--sage-3); font-family: var(--serif);
-  font-size: clamp(1.9rem, 8.6vw, 8.1rem); line-height: 1; letter-spacing: -0.045em;
-  white-space: nowrap; user-select: none;
+  display: flex; align-items: center; justify-content: center; gap: 0.28em;
+  margin: clamp(32px, 5vw, 56px) 0 clamp(24px, 3vw, 36px); color: var(--sage-2);
+  font-family: var(--serif); font-weight: 700; font-size: clamp(1.7rem, 6.4vw, 6rem);
+  line-height: 1; letter-spacing: -0.03em; white-space: nowrap; user-select: none;
 }
-.footer-wordmark svg { width: 0.32em; height: 0.78em; flex: none; margin-bottom: 0.12em; transform: rotate(18deg); }
+.footer-wordmark-mark {
+  display: grid; place-items: center; flex: none;
+  width: 1.05em; height: 1.05em; border-radius: 0.3em;
+  background: linear-gradient(155deg, var(--sage-2), var(--sage));
+  box-shadow: 0 0.12em 0.4em -0.15em rgba(31, 58, 45, 0.35);
+  color: var(--paper);
+}
+.footer-wordmark-mark svg { width: 0.62em; height: 0.62em; }
 .footer-bottom { display: grid; gap: 12px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 0.78rem; line-height: 1.7; color: var(--ink-mute); }
 @media (max-width: 1100px) {
   .footer-main { grid-template-columns: minmax(0, 1fr); gap: 36px; }
