@@ -13,7 +13,10 @@ Run from the repo root before pushing:
 Exits with status 1 if any page has a problem.
 """
 import datetime
+import json
+import re
 import pathlib
+from urllib.parse import urlsplit, unquote
 import subprocess
 import sys
 from html.parser import HTMLParser
@@ -27,17 +30,30 @@ PAGES = {  # sitemap URL path -> file
     "terms/": "terms/index.html",
     "delete-account/": "delete-account/index.html",
 }
-CHECK = list(PAGES.values()) + ["404.html"]
+CHECK = list(PAGES.values()) + ["404.html", "recipe/index.html", "tools/og-card.html"]
 
 
 class Checker(HTMLParser):
     def __init__(self):
         super().__init__()
         self.problems = []
+        self.ids = set()
+        self.refs = []
+        self.h1_count = 0
 
     def handle_starttag(self, tag, attrs):
         line = self.getpos()[0]
         names = [k for k, _ in attrs]
+        values = dict(attrs)
+        if values.get("id"):
+            if values["id"] in self.ids:
+                self.problems.append(f"line {line}: duplicate id {values['id']}")
+            self.ids.add(values["id"])
+        if tag == "h1":
+            self.h1_count += 1
+        for key in ("href", "src", "poster"):
+            if values.get(key):
+                self.refs.append((line, values[key]))
         for key, value in attrs:
             if value and any(f" {a}=" in value for a in ("alt", "src", "href", "class", "width", "height")):
                 self.problems.append(f"line {line}: <{tag} {key}=…> swallowed another attribute: {value[:70]!r}")
@@ -60,9 +76,50 @@ def last_changed(path):
 
 def main():
     failed = False
+    parsed = {}
     for rel in CHECK:
         checker = Checker()
         checker.feed((ROOT / rel).read_text(encoding="utf-8"))
+        parsed[rel] = checker
+
+    def check_ref(source, reference):
+        url = urlsplit(reference)
+        if url.scheme or url.netloc or not reference or reference.startswith("data:"):
+            return None
+        target = (ROOT / unquote(url.path).lstrip("/")) if url.path.startswith("/") else ROOT / source.parent / unquote(url.path)
+        if not url.path:
+            target = ROOT / source
+        if target.is_dir():
+            target /= "index.html"
+        if not target.exists():
+            return f"missing local target: {reference}"
+        if url.fragment and target.suffix == ".html":
+            relative = str(target.resolve().relative_to(ROOT))
+            if relative not in parsed:
+                other = Checker()
+                other.feed(target.read_text(encoding="utf-8"))
+                parsed[relative] = other
+            if unquote(url.fragment) not in parsed[relative].ids:
+                return f"missing anchor: {reference}"
+        return None
+
+    for rel in CHECK:
+        checker = parsed[rel]
+        html = (ROOT / rel).read_text(encoding="utf-8")
+        if rel != "tools/og-card.html":
+            if checker.h1_count != 1:
+                checker.problems.append(f"expected one h1, found {checker.h1_count}")
+            if not re.search(r'<link[^>]+rel="canonical"', html):
+                checker.problems.append("missing canonical URL")
+        for line, reference in checker.refs:
+            problem = check_ref(pathlib.Path(rel), reference)
+            if problem:
+                checker.problems.append(f"line {line}: {problem}")
+        for block in re.findall(r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>', html, re.S):
+            try:
+                json.loads(block)
+            except json.JSONDecodeError as error:
+                checker.problems.append(f"invalid JSON-LD: {error}")
         if checker.problems:
             failed = True
             print(f"✗ {rel}")
@@ -70,6 +127,23 @@ def main():
                 print(f"    {p}")
         else:
             print(f"✓ {rel}")
+
+    for css in (ROOT / "assets").rglob("*.css"):
+        for reference in re.findall(r"url\(\s*['\"]?([^)'\"]+)['\"]?\s*\)", css.read_text()):
+            problem = check_ref(css.relative_to(ROOT), reference)
+            if problem:
+                failed = True
+                print(f"✗ {css.relative_to(ROOT)}: {problem}")
+    manifest = json.loads((ROOT / "site.webmanifest").read_text())
+    for icon in manifest.get("icons", []):
+        problem = check_ref(pathlib.Path("site.webmanifest"), icon["src"])
+        if problem:
+            failed = True
+            print(f"✗ site.webmanifest: {problem}")
+    if f"Sitemap: {SITE}sitemap.xml" not in (ROOT / "robots.txt").read_text():
+        failed = True
+        print("✗ robots.txt: missing sitemap reference")
+    print("✓ Local HTML/CSS/manifest references and JSON-LD checked" if not failed else "✗ Fix the issues above")
 
     urls = "\n".join(
         f"  <url><loc>{SITE}{path}</loc><lastmod>{last_changed(rel)}</lastmod></url>"
