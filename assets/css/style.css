@@ -20,6 +20,11 @@
   --sage-4: #e8efe2;
   --sun: #f7dcb3;
   --amber: #e3993c;
+  /* Terracotta accent, matching the app (appTerracotta / appTerracottaSoft). */
+  --terracotta: #b66d42;
+  --terracotta-ink: #9a5632; /* for small text: 5.3:1 on cream (WCAG AA) */
+  --terracotta-soft: #f3e3d6;
+  --terracotta-line: rgba(182, 109, 66, 0.38);
   --line: rgba(31, 58, 45, 0.12);
   --line-strong: rgba(31, 58, 45, 0.2);
 
@@ -2431,3 +2436,46 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .hero-meta .chip:not(.duo-badge) { display: none; }
   .hero-meta .duo-badge { white-space: normal; }
 }
+
+/* ==========================================================================
+   Terracotta accents — the app's warm second colour, used the same way:
+   streaks, icon tiles, thin frames and small labels. Green stays the lead.
+   ========================================================================== */
+.hero-pill b { background: var(--terracotta-ink); color: var(--paper); }
+.eyebrow::before, .eyebrow.center::after { background: var(--terracotta); opacity: 0.75; }
+.lockscreen .eyebrow::before, .lockscreen .eyebrow.center::after { background: var(--sun); }
+
+/* Streaks: the flame circle and the count, like the Home streak card */
+.float-card .ico.amber { background: var(--terracotta-soft); color: var(--terracotta); border-radius: 50%; }
+.habit[aria-pressed="true"] .streak { color: var(--terracotta-ink); }
+
+/* Section labels and chip icons */
+.story-step .num { color: var(--terracotta-ink); }
+.story-step .num::after { background: var(--terracotta-line); }
+.chip svg { color: var(--terracotta); }
+
+/* Toolkit: terracotta like the Workouts / Recipes / Personal bests tiles */
+.tk-tab:not([aria-selected="true"]) svg { color: var(--terracotta); }
+.tk-tab .tk-bar { background: #e2a27a; }
+.tk-panel .tick { background: var(--terracotta-soft); color: var(--terracotta-ink); }
+.tk-note svg { color: var(--terracotta); }
+
+/* "More inside" tiles: terracotta icon squares with a thin frame */
+.tile .ti { background: var(--terracotta-soft); color: var(--terracotta); box-shadow: inset 0 0 0 1px var(--terracotta-line); }
+.tile-badge:not(.soon) { background: var(--terracotta-ink); color: var(--paper); }
+.tile-feature { box-shadow: inset 0 0 0 1px var(--terracotta-line); }
+
+/* Challenges: earned rewards glow terracotta instead of amber */
+.reward.earned { background: linear-gradient(180deg, #fdf6ef, var(--terracotta-soft)); border-color: var(--terracotta-line); }
+.reward.earned .ri { background: #efd3bf; color: var(--terracotta); }
+.reward.earned .count { color: var(--terracotta-ink); }
+.reward.earned .bar i { background: linear-gradient(90deg, var(--terracotta), #dd9a70); }
+.founder-badge svg { color: var(--terracotta); }
+
+/* Footer */
+.footer-founder { color: var(--terracotta-ink); }
+.footer-column a:hover { text-decoration-color: var(--terracotta); }
+.footer-column svg, .footer-social svg { color: var(--terracotta); }
+.footer-social a:hover { background: var(--terracotta-soft); border-color: var(--terracotta-line); }
+
+.float-card .ring-ico { background: var(--terracotta-soft); border-radius: 50%; }
