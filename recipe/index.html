@@ -31,10 +31,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
   <style>
+    @import url("../assets/css/style.css?v=2026111402") layer(site);
+    @layer site {
+      body > .wrap, body > .wrap * { all: revert-layer; }
+    }
     :root { --bg:#f8f4ec; --card:#fffbf6; --ink:#20332c; --muted:#6b6a64; --line:#e4dccf; --sage:#6f8f63; --moss:#556a4f; --terra:#b8574a; --terra-soft:#f3ddd6; }
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
-    body { margin:0; background:var(--bg); color:var(--ink); font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.55; padding:0 16px calc(32px + env(safe-area-inset-bottom)); }
+    body { font-size:16px; margin:0; background:var(--bg); color:var(--ink); font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.55; padding:0 16px calc(32px + env(safe-area-inset-bottom)); }
     .wrap { max-width: 640px; margin: 0 auto; }
     header { padding: 20px 0 12px; }
     .brand { display:inline-flex; align-items:center; gap:10px; color:var(--ink); text-decoration:none; font-weight:700; }
@@ -43,11 +47,11 @@
     .eyebrow { margin:0 0 6px; color:var(--terra); font-size:.75rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
     h1 { margin:0 0 6px; font-family:"Source Serif 4",Georgia,serif; font-size:1.9rem; line-height:1.15; overflow-wrap:anywhere; }
     #page-title { margin: 12px 0 20px; }
-    h2 { margin:22px 0 8px; font-size:1.05rem; }
+    body > .wrap h2 { margin:22px 0 8px; font-size:1.05rem; }
     .photo { display:block; width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; border-radius:18px; margin:4px 0 16px; background:var(--terra-soft); }
     .facts { margin:0; color:var(--terra); font-weight:600; }
-    ul { margin:0; padding-left:1.2rem; }
-    li { margin:3px 0; overflow-wrap:anywhere; }
+    body > .wrap ul { margin:0; padding-left:1.2rem; }
+    body > .wrap li { margin:3px 0; overflow-wrap:anywhere; }
     .method { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
     .actions { display:flex; flex-direction:column; gap:10px; margin-top:26px; }
     .btn { display:block; text-align:center; text-decoration:none; font-weight:700; border-radius:999px; padding:14px 20px; border:1.5px solid var(--sage); }
@@ -55,12 +59,23 @@
     .btn-secondary { background:transparent; color:var(--moss); }
     .hint { margin:16px 0 0; color:var(--muted); font-size:.9rem; }
     .problem h1 { font-size:1.5rem; }
-    footer { margin-top:28px; text-align:center; color:var(--muted); font-size:.85rem; }
-    footer a { color:var(--muted); }
+    .footer { margin: 28px -16px calc(-32px - env(safe-area-inset-bottom)); text-align: left; }
+    .footer > .wrap { max-width: var(--wrap); width: 100%; }
     [hidden] { display:none !important; }
   </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+<symbol id="i-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.493 2.27-1.177 3.08-.744.9-1.99 1.57-2.987 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.572-2.27 1.206-2.98.804-.94 2.142-1.64 3.248-1.68.03.13.05.28.05.43zm4.565 15.71c-.03.07-.463 1.58-1.518 3.12-.945 1.34-1.94 2.71-3.43 2.71-1.517 0-1.9-.88-3.63-.88-1.698 0-2.302.91-3.67.91-1.377 0-2.332-1.26-3.428-2.8-1.287-1.82-2.323-4.63-2.323-7.28 0-4.28 2.797-6.55 5.552-6.55 1.448 0 2.675.95 3.6.95.865 0 2.222-1.01 3.902-1.01.613 0 2.886.06 4.374 2.19-.13.09-2.383 1.37-2.383 4.19 0 3.26 2.854 4.42 2.955 4.45z"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 100 240">
+    <path d="M50 238C12 170 8 80 50 4C92 80 88 170 50 238Z" fill="currentColor"/>
+    <path d="M50 234V24M50 80L30 60M50 120L26 96M50 160L28 138M50 100L70 80M50 140L73 117M50 180L70 162" stroke="#fff" stroke-opacity=".16" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7.5l8 6 8-6"/></g></symbol>
+<symbol id="i-instagram" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></g></symbol>
+<symbol id="i-facebook" viewBox="0 0 24 24"><path fill="currentColor" d="M13.4 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.7v3h2.6V21z"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 3.6 5.3 3.6 8.5s-1.2 6-3.6 8.5c-2.4-2.5-3.6-5.3-3.6-8.5s1.2-6 3.6-8.5z"/></g></symbol>
+</svg>
 <div class="wrap">
   <header>
     <a class="brand" href="../">
@@ -117,11 +132,67 @@
     </noscript>
   </main>
 
-  <footer>
-    <a href="../privacy/">Privacy</a> · <a href="../terms/">Terms</a> · <a href="../support/">Support</a>
-    <p>© <span id="year">2026</span> Chooky Chasing Life</p>
-  </footer>
 </div>
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-welcome">
+      <div class="footer-signoff">
+        <img src="../assets/chooky.webp" width="640" height="800" loading="lazy" decoding="async" alt="Chooky, founder of Not Another Monday">
+        <div>
+          <p class="footer-note">Small steps, every day.<br>See you on the path.</p>
+          <p class="footer-founder">— Chooky, founder</p>
+        </div>
+      </div>
+      <a class="store" href="https://apps.apple.com/app/id6809999070" target="_blank" rel="noopener" data-store="auto" aria-label="Download on the App Store">
+        <svg aria-hidden="true"><use href="#i-apple"/></svg>
+        <span><small>Download on the</small><strong>App Store</strong></span>
+      </a>
+    </div>
+    <div class="footer-main">
+      <nav class="footer-links" aria-label="Footer">
+        <div class="footer-column">
+          <h2>The app</h2>
+          <ul>
+            <li><a href="../#features">Features</a></li>
+            <li><a href="../#lock-screen">Fasting</a></li>
+            <li><a href="../#toolkit">Toolkit</a></li>
+            <li><a href="../#premium">Premium</a></li>
+            <li><a href="../#rewards">Challenges</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h2>Help</h2>
+          <ul>
+            <li><a href="../support/">Support &amp; FAQ</a></li>
+            <li><a href="../support/#q-cancel">Manage subscription</a></li>
+            <li><a href="../delete-account/">Delete your account</a></li>
+            <li><a href="mailto:support@notanothermonday.com"><svg aria-hidden="true"><use href="#i-mail"/></svg>Email us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h2>Legal</h2>
+          <ul>
+            <li><a href="../privacy/">Privacy Policy</a></li>
+            <li><a href="../terms/">Terms of Use</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="footer-follow">
+        <h2 class="footer-heading" id="footer-follow-title">Follow along</h2>
+        <div class="footer-social" role="group" aria-labelledby="footer-follow-title">
+          <a href="https://www.instagram.com/chookychasinglife/" target="_blank" rel="noopener me" aria-label="Instagram: @chookychasinglife"><svg aria-hidden="true"><use href="#i-instagram"/></svg><span>Instagram</span></a>
+          <a href="https://www.facebook.com/chookychasinglife" target="_blank" rel="noopener me" aria-label="Facebook: Chooky Chasing Life"><svg aria-hidden="true"><use href="#i-facebook"/></svg><span>Facebook</span></a>
+          <a href="https://www.chookychasinglife.com/" target="_blank" rel="noopener me" aria-label="Chooky Chasing Life website"><svg aria-hidden="true"><use href="#i-globe"/></svg><span>chookychasinglife.com</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-wordmark" aria-hidden="true"><span>Not Another Monday</span><svg><use href="#i-leaf"/></svg></div>
+    <div class="footer-bottom">
+      <p>© <span id="year" data-year>2026</span> · Chooky Chasing Life · ABN 38 238 167 325 · Made in Queensland, Australia</p>
+      <p>Not Another Monday is a wellbeing tool, not medical advice. Talk to your doctor before starting fasting or making changes to your diet or exercise.</p>
+    </div>
+  </div>
+</footer>
 <script src="../assets/js/recipe.js?v=2026111401" defer></script>
 </body>
 </html>
