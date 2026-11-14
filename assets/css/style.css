@@ -2362,7 +2362,8 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .lock-stage { order: 4; margin: 40px 0 8px; }
   .lock-styles { order: 5; }
   .lock-points { order: 6; }
-  .lock-health { order: 7; }
+  .fast-widget-showcase { order: 7; }
+  .lock-health { order: 8; }
   .lockscreen .sun { width: 140px; right: -30px; top: -30px; }
 }
 
@@ -2384,3 +2385,8 @@ a, button, summary { -webkit-tap-highlight-color: transparent; }
   .nav-inner { gap: 10px; }
 }
 @media (max-width: 960px) { .fast-widget-showcase { margin-inline: auto; } }
+@media (max-width: 560px) {
+  .hero-meta { display: flex; margin-top: 16px; }
+  .hero-meta .chip:not(.duo-badge) { display: none; }
+  .hero-meta .duo-badge { white-space: normal; }
+}
